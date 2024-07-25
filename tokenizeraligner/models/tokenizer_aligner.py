@@ -4,7 +4,7 @@ from transformers import (
 )
 from transformers import AutoTokenizer
 import torch
-
+from typing import Union, List
 class TokenizerAligner:
     @staticmethod
     def contains_emoji_or_greek(s):
@@ -75,7 +75,7 @@ class TokenizerAligner:
         return lcs
     
     @staticmethod
-    def text_to_words_batch(texts: list, text_tokenized_all: BatchEncoding):
+    def text_to_words_batch(texts: List[str], text_tokenized_all: BatchEncoding):
         words_all = []
         for i in range(len(text_tokenized_all["input_ids"])):
             words = []
@@ -467,8 +467,10 @@ class TokenizerAligner:
 
     @staticmethod
     def _align_tokens_batch(
-        text: str, text_tokenized_first: list, text_tokenized_second: list
+        text: List[str], text_tokenized_first: BatchEncoding, text_tokenized_second: BatchEncoding
     ):
+        if not isinstance(text, list):
+            text = [text]
         word_token_idx_first = [
             text_tokenized_first[i].word_ids
             for i in range(len(text_tokenized_first["input_ids"]))
@@ -494,7 +496,7 @@ class TokenizerAligner:
 
     @staticmethod
     def align_tokens(
-        text: str,
+        text: Union[str, List[str]],
         text_tokenized_first: list,
         text_tokenized_second: list,
         return_all=False,
