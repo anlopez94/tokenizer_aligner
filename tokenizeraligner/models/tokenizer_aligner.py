@@ -193,7 +193,7 @@ class TokenizerAligner:
                     # print("problema")
                     # print("".join(main_list[i]), "".join(compare_list[j]))
                     # raise Exception(f"Error in the alignment of the tokens i{i} j{j}")
-                    return None, None, None, None
+                    return None, None, i, j
                 i = i + 1
                 j = j + 1
         result_ids.append(
