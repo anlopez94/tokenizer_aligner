@@ -231,11 +231,12 @@ class TokenizerAligner:
 
     @staticmethod
     def _map_words_as_dafault(
-        i, j, main_list, compare_list, result_ids, result_words
+        i, j, main_list, compare_list
     ):
+        result_ids_plus, result_words_plus = [], []
         while i < len(main_list) and j < len(compare_list):
-            result_ids.append((list(range(i, i + 1)), list(range(j, j + 1))))
-            result_words.append(
+            result_ids_plus.append((list(range(i, i + 1)), list(range(j, j + 1))))
+            result_words_plus.append(
                 (
                     "".join(main_list[i : i + 1]),
                     "".join(compare_list[j : j + 1]),
@@ -243,7 +244,7 @@ class TokenizerAligner:
             )
             i += 1
             j += 1
-        return result_ids, result_words, i, j
+        return result_ids_plus, result_words_plus, i, j
     
     @staticmethod
     def map_words(main_list: list, compare_list: list, n: int = 15):
@@ -267,9 +268,10 @@ class TokenizerAligner:
                 )
                 #if there is no way to match words, we match one by one until the end of one list
                 if result_ids_plus is None:
-                    result_ids, result_words, i, j = TokenizerAligner._map_words_as_dafault(
-                        i, j, main_list, compare_list, result_ids, result_words
+                    result_ids_plus, result_words_plus, i, j = TokenizerAligner._map_words_as_dafault(
+                        i, j, main_list, compare_list, 
                     )
+               
                 result_ids.extend(result_ids_plus)
                 result_words.extend(result_words_plus)
         return result_ids, result_words
