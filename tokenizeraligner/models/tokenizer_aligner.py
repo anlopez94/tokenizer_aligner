@@ -174,10 +174,14 @@ class TokenizerAligner:
                             main_list[i + l]
                         ):
                             l = l + 1
+                            if (i + l) >= len(main_list):
+                                break
                         while TokenizerAligner.contains_emoji_or_greek(
                             compare_list[j + k]
                         ):
                             k = k + 1
+                            if (j + k) >= len(compare_list):
+                                break
                         result_ids.append(
                             (list(range(i, i + l)), list(range(j, j + k)))
                         )
