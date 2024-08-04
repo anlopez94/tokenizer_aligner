@@ -29,6 +29,19 @@ class TokenizerAligner:
         return bool(emoji_and_greek_pattern.search(s))
 
     @staticmethod
+    def adjust_list_length(list1, list2):
+        len1 = len(list1)
+        len2 = len(list2)
+        
+        if len1 < len2:
+            # If list1 is shorter, append zeros
+            list1.extend([0] * (len2 - len1))
+        elif len1 > len2:
+            # If list1 is longer, truncate the excess elements
+            list1 = list1[:len2]
+        return list1
+    
+    @staticmethod
     def text_to_words(text, text_tokenized: BatchEncoding, word_token_ids: list):
         words = []
         for i in range(1 + max([x if x is not None else 0 for x in word_token_ids])):
@@ -252,32 +265,37 @@ class TokenizerAligner:
     
     @staticmethod
     def map_words(main_list: list, compare_list: list, n: int = 15):
-        result_ids, result_words = [], []
-        i = 0
-        j = 0
-        comb = [(i, j) for j in range(1, n) for i in range(1, n)]
-        main_list = [re.sub(r"\s+", "", word) for word in main_list]
-        compare_list = [re.sub(r"\s+", "", word) for word in compare_list]
-        # we sorted the combinations to prioritize the most probables
-        comb_sorted = sorted(comb, key=lambda x: x[0] + x[1], reverse=False)
-        while i < len(main_list) and j < len(compare_list):
-            asigned, i, j, result_ids, result_words = TokenizerAligner._map_words(
-                i, j, comb_sorted, main_list, compare_list, result_ids, result_words
-            )
-            if asigned == 1:
-                continue
-            else:
-                result_ids_plus, result_words_plus, i, j = (
-                    TokenizerAligner._map_words_v2(main_list, compare_list, i, j)
+        try:
+            result_ids, result_words = [], []
+            i = 0
+            j = 0
+            comb = [(i, j) for j in range(1, n) for i in range(1, n)]
+            main_list = [re.sub(r"\s+", "", word) for word in main_list]
+            compare_list = [re.sub(r"\s+", "", word) for word in compare_list]
+            # we sorted the combinations to prioritize the most probables
+            comb_sorted = sorted(comb, key=lambda x: x[0] + x[1], reverse=False)
+            while i < len(main_list) and j < len(compare_list):
+                asigned, i, j, result_ids, result_words = TokenizerAligner._map_words(
+                    i, j, comb_sorted, main_list, compare_list, result_ids, result_words
                 )
-                #if there is no way to match words, we match one by one until the end of one list
-                if result_ids_plus is None:
-                    result_ids_plus, result_words_plus, i, j = TokenizerAligner._map_words_as_dafault(
-                        i, j, main_list, compare_list, 
+                if asigned == 1:
+                    continue
+                else:
+                    result_ids_plus, result_words_plus, i, j = (
+                        TokenizerAligner._map_words_v2(main_list, compare_list, i, j)
                     )
-               
-                result_ids.extend(result_ids_plus)
-                result_words.extend(result_words_plus)
+                    #if there is no way to match words, we match one by one until the end of one list
+                    if result_ids_plus is None:
+                        result_ids_plus, result_words_plus, i, j = TokenizerAligner._map_words_as_dafault(
+                            i, j, main_list, compare_list, 
+                        )
+                
+                    result_ids.extend(result_ids_plus)
+                    result_words.extend(result_words_plus)
+        except Exception as e:
+            print(e)
+            print('error aligning tokens')
+            return None, None
         return result_ids, result_words
 
     @staticmethod
@@ -311,6 +329,9 @@ class TokenizerAligner:
         tokens_idx_mapped: list, tokens_str_first: list, tokens_str_second: list
     ):
         tokens_str_mapped = []
+        #in case alignment has failed in this instance
+        if tokens_idx_mapped is None:
+            return None
         for tokens in tokens_idx_mapped:
             tokens_str_mapped.append(
                 (
@@ -377,6 +398,9 @@ class TokenizerAligner:
         tokens_idx_mapped: list, tokens_id_first: list, tokens_id_second: list
     ):
         tokens_str_mapped = []
+        #in case alignment has failed in this instance
+        if tokens_idx_mapped is None:
+            return None
         for tokens in tokens_idx_mapped:
             tokens_str_mapped.append(
                 (
@@ -393,7 +417,7 @@ class TokenizerAligner:
         text_tokenized_second: BatchEncoding,
     ):
         tokens_id_mapped = []
-
+        
         tokens_id_first = text_tokenized_first["input_ids"]
         tokens_id_second = text_tokenized_second["input_ids"]
 
@@ -489,6 +513,8 @@ class TokenizerAligner:
         words_idx_mapped, words_str_mapped = TokenizerAligner.map_words(
             words_first, words_second
         )
+        if words_idx_mapped is None:
+            return None, None
         tokens_idx_mapped = TokenizerAligner.map_tokens(
             words_idx_mapped, word_token_idx_first, word_token_idx_second
         )
@@ -515,6 +541,9 @@ class TokenizerAligner:
             words_idx_mapped_i, words_str_mapped_i = TokenizerAligner.map_words(
                 words_first[i], words_second[i]
             )
+            if words_idx_mapped_i is None:
+                tokens_idx_mapped.append(None)
+                words_str_mapped.append(None)    
             tokens_idx_mapped_i = TokenizerAligner.map_tokens(
                 words_idx_mapped_i, word_token_idx_first[i], word_token_idx_second[i]
             )
