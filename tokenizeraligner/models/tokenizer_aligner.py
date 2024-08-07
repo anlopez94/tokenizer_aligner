@@ -544,11 +544,12 @@ class TokenizerAligner:
             if words_idx_mapped_i is None:
                 tokens_idx_mapped.append(None)
                 words_str_mapped.append(None)    
-            tokens_idx_mapped_i = TokenizerAligner.map_tokens(
-                words_idx_mapped_i, word_token_idx_first[i], word_token_idx_second[i]
-            )
-            tokens_idx_mapped.append(tokens_idx_mapped_i)
-            words_str_mapped.append(words_str_mapped_i)
+            else:
+                tokens_idx_mapped_i = TokenizerAligner.map_tokens(
+                    words_idx_mapped_i, word_token_idx_first[i], word_token_idx_second[i]
+                )
+                tokens_idx_mapped.append(tokens_idx_mapped_i)
+                words_str_mapped.append(words_str_mapped_i)
 
         return tokens_idx_mapped, words_str_mapped
 
