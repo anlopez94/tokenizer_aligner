@@ -37,7 +37,6 @@ from transformers.modeling_outputs import (
     SequenceClassifierOutputWithPast,
 )
 from transformers.models.llama.modeling_llama import LlamaDecoderLayer
-from fixations_predictor.utilsFP import FixationsPredictor
 from transformers import AutoModelForCausalLM, AutoTokenizer, DataCollatorWithPadding
 from typing import (
     TypeVar,

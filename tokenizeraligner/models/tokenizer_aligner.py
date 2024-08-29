@@ -5,6 +5,7 @@ from transformers import (
 from transformers import AutoTokenizer
 import torch
 from typing import Union, List
+
 class TokenizerAligner:
     @staticmethod
     def contains_emoji_or_greek(s):
@@ -50,7 +51,7 @@ class TokenizerAligner:
         return words
 
     @staticmethod
-    def longest_common_subsequence(seq1, seq2):
+    def longest_common_subsequence(seq1: List, seq2: List):
         m, n = len(seq1), len(seq2)
         # Create a 2D array to store lengths of longest common subsequence
         L = [[0] * (n + 1) for _ in range(m + 1)]
@@ -92,6 +93,7 @@ class TokenizerAligner:
         words_all = []
         for i in range(len(text_tokenized_all["input_ids"])):
             words = []
+            
             for j in range(
                 1
                 + max(
@@ -100,6 +102,7 @@ class TokenizerAligner:
             ):
                 chars = text_tokenized_all[i].word_to_chars(j)
                 words.append(texts[i][chars[0] : chars[1]].strip().lower())
+
             words_all.append(words)
         return words_all
 
