@@ -43,6 +43,28 @@ class TokenizerAligner:
         return list1
     
     @staticmethod
+    def search_firt_token_word(text_tokenized_all):
+        """
+        """
+        firt_token_word_list = []
+        
+        for i in list(range(len(text_tokenized_all['input_ids']))):
+            firt_token_word_list_i = [1] if text_tokenized_all[i].word_ids[0] is not None else [0]
+            for j in list(range(1, len(text_tokenized_all[i].word_ids))):
+                if text_tokenized_all[i].word_ids[j - 1] is None:
+                    firt_token_word_list_i.append(1)
+                    continue
+                if text_tokenized_all[i].word_ids[j] is None:
+                    firt_token_word_list_i.append(0)
+                    continue
+                if text_tokenized_all[i].word_ids[j] > text_tokenized_all[i].word_ids[j - 1] :
+                    firt_token_word_list_i.append(1)
+                else:
+                    firt_token_word_list_i.append(0) 
+            firt_token_word_list.append(firt_token_word_list_i)
+        return firt_token_word_list
+    
+    @staticmethod
     def text_to_words(text, text_tokenized: BatchEncoding, word_token_ids: list):
         words = []
         for i in range(1 + max([x if x is not None else 0 for x in word_token_ids])):
