@@ -43,7 +43,7 @@ class TokenizerAligner:
         return list1
     
     @staticmethod
-    def search_firt_token_word(text_tokenized_all):
+    def search_first_token_word(text_tokenized_all):
         """
         """
         firt_token_word_list = []
