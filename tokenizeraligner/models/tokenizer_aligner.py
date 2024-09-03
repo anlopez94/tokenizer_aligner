@@ -348,7 +348,111 @@ class TokenizerAligner:
                 )
             tokens_ids_mapped.append((tokens_id_first, tokens_id_second))
         return tokens_ids_mapped
+    
+    @staticmethod
+    def map_features_between_paired_list(
+        features: list,
+        mapped_list: list,
+        first_list: list,
+        second_list: list,
+        mode='mean',
+        padding=False, 
+    ):
+ 
+        features_idx, features_mapped_idx = 0, 0
+        features_mapped = []
+        for j in range(len(mapped_list)):
+            pair = mapped_list[j]
+            # compute pair features for the pair of elementes in the list where i have the features
+            #we asume that we have the features for the second pair and we want to compute of the first pair
+            k, features_pair = 0, []
+            while k < len(pair[1]):
+                if second_list[features_idx] == pair[1][k]:
+                    features_pair.append(features[features_idx])
+                    k += 1
+                features_idx += 1
 
+            # asign features to the elementes of the first list
+            k, fix_mapped_pair_list = 0, []
+            while k < len(pair[0]):
+                if (
+                    first_list[features_mapped_idx]
+                    == pair[0][k]
+                ):
+                    fix_mapped_pair_list.append(features_mapped_idx)
+                    k += 1
+                features_mapped_idx += 1
+            if mode == 'mean':
+                feature_value = sum(features_pair) / len(fix_mapped_pair_list)
+            elif mode == 'max':
+                feature_value = max(features_pair)
+            elif mode == 'sum':
+                feature_value = sum(features_pair)
+            # we assign the value to the elements in the first list is they are in the paired mapped ones, if not we add a cero
+            while len(features_mapped) < features_mapped_idx:
+                if (
+                    first_list[len(features_mapped)]
+                    in pair[0]
+                ):
+                    features_mapped.append(feature_value)
+                else:
+                    features_mapped.append(0)
+            if padding:
+                while len(features_mapped) < len(first_list):
+                    features_mapped.append(0)
+        return features_mapped
+    
+    @staticmethod
+    def map_words_V2(list1, list2):
+        """ metho more simple not used because is was not working in some cases"""
+        # Initialize pointers and results
+        i, j = 0, 0
+        mapping = []
+
+        # Iterate through both lists until one of them is exhausted
+        while i < len(list1) and j < len(list2):
+            # Track original positions for both elements
+            indices1 = [i + 1]  # Using 1-based indexing for the output format
+            indices2 = [j + 1]
+
+            # If elements match directly, add them to the mapping
+            if list1[i] == list2[j]:
+                mapping.append((indices1, indices2))
+                i += 1
+                j += 1
+            else:
+                # Attempt to combine elements from list1 to match list2[j]
+                combined1 = list1[i]
+                i_temp = i
+                while i_temp + 1 < len(list1) and combined1 != list2[j]:
+                    i_temp += 1
+                    combined1 += list1[i_temp]
+                    indices1.append(i_temp + 1)
+
+                # Attempt to combine elements from list2 to match list1[i]
+                combined2 = list2[j]
+                j_temp = j
+                while j_temp + 1 < len(list2) and combined2 != list1[i]:
+                    j_temp += 1
+                    combined2 += list2[j_temp]
+                    indices2.append(j_temp + 1)
+
+                # Determine the successful combination and update the pointers accordingly
+                if combined1 == list2[j]:
+                    mapping.append((indices1, [j + 1]))
+                    i = i_temp + 1
+                    j += 1
+                elif combined2 == list1[i]:
+                    mapping.append(([i + 1], indices2))
+                    j = j_temp + 1
+                    i += 1
+                else:
+                    # If no matches found by combining, increment both pointers
+                    mapping.append((indices1, indices2))
+                    i += 1
+                    j += 1
+
+        return mapping
     @staticmethod
     def _map_tokens_to_str_idx(
         tokens_idx_mapped: list, tokens_str_first: list, tokens_str_second: list
