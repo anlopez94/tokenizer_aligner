@@ -311,6 +311,7 @@ class TokenizerAligner:
                     )
                     #if there is no way to match words, we match one by one until the end of one list
                     if result_ids_plus is None:
+                        print('error aligning tokens, will match them automatically')
                         result_ids_plus, result_words_plus, i, j = TokenizerAligner._map_words_as_dafault(
                             i, j, main_list, compare_list, 
                         )
@@ -354,7 +355,6 @@ class TokenizerAligner:
         features: list,
         mapped_list: list,
         first_list: list,
-        second_list: list,
         mode='mean',
         padding=False, 
     ):
@@ -367,7 +367,7 @@ class TokenizerAligner:
             #we asume that we have the features for the second pair and we want to compute of the first pair
             k, features_pair = 0, []
             while k < len(pair[1]):
-                if second_list[features_idx] == pair[1][k]:
+                if features_idx == pair[1][k]:
                     features_pair.append(features[features_idx])
                     k += 1
                 features_idx += 1
@@ -376,7 +376,7 @@ class TokenizerAligner:
             k, fix_mapped_pair_list = 0, []
             while k < len(pair[0]):
                 if (
-                    first_list[features_mapped_idx]
+                    features_mapped_idx
                     == pair[0][k]
                 ):
                     fix_mapped_pair_list.append(features_mapped_idx)
@@ -391,7 +391,7 @@ class TokenizerAligner:
             # we assign the value to the elements in the first list is they are in the paired mapped ones, if not we add a cero
             while len(features_mapped) < features_mapped_idx:
                 if (
-                    first_list[len(features_mapped)]
+                    len(features_mapped)
                     in pair[0]
                 ):
                     features_mapped.append(feature_value)
