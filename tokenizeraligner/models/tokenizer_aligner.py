@@ -312,6 +312,8 @@ class TokenizerAligner:
                     #if there is no way to match words, we match one by one until the end of one list
                     if result_ids_plus is None:
                         print('error aligning tokens, will match them automatically')
+                        print(main_list[i-2:i+2])
+                        print(compare_list[j-2:j+2])
                         result_ids_plus, result_words_plus, i, j = TokenizerAligner._map_words_as_dafault(
                             i, j, main_list, compare_list, 
                         )
