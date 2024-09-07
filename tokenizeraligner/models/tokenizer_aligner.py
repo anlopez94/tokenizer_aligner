@@ -127,6 +127,24 @@ class TokenizerAligner:
 
             words_all.append(words)
         return words_all
+    
+    @staticmethod
+    def text_to_words_batch_v2(texts: List[str], text_tokenized_all: BatchEncoding):
+        words_all = []
+        for i in range(len(text_tokenized_all["input_ids"])):
+            words = []
+            
+            for j in range(
+                max(
+                    [x if x is not None else 0 for x in text_tokenized_all[i].word_ids]
+                )
+            ):
+                chars = text_tokenized_all[i].word_to_chars(j)
+                chars_next = text_tokenized_all[i].word_to_chars(j+1)
+                words.append(texts[i][chars[0] : chars_next[0]].strip().lower())
+            words.append(texts[i][chars_next[0] : ].strip().lower())
+            words_all.append(words)
+        return words_all
 
     @staticmethod
     def _map_words_v2(main_list: list, compare_list: list, i: int, j: int):
@@ -665,7 +683,7 @@ class TokenizerAligner:
             text_tokenized_second[i].word_ids
             for i in range(len(text_tokenized_second["input_ids"]))
         ]
-        words_first = TokenizerAligner.text_to_words_batch(text, text_tokenized_first)
+        words_first = TokenizerAligner.text_to_words_batch_v2(text, text_tokenized_first)
         words_second = TokenizerAligner.text_to_words_batch(text, text_tokenized_second)
         tokens_idx_mapped, words_str_mapped = [], []
         for i in range(len(text_tokenized_first["input_ids"])):
