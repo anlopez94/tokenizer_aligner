@@ -133,16 +133,15 @@ class TokenizerAligner:
         words_all = []
         for i in range(len(text_tokenized_all["input_ids"])):
             words = []
-            
-            for j in range(
-                max(
-                    [x if x is not None else 0 for x in text_tokenized_all[i].word_ids]
-                )
-            ):
+            num_words = max([x if x is not None else 0 for x in text_tokenized_all[i].word_ids])
+            for j in range(num_words):
                 chars = text_tokenized_all[i].word_to_chars(j)
                 chars_next = text_tokenized_all[i].word_to_chars(j+1)
                 words.append(texts[i][chars[0] : chars_next[0]].strip().lower())
-            words.append(texts[i][chars_next[0] : ].strip().lower())
+            if num_words > 0:
+                words.append(texts[i][chars_next[0] : ].strip().lower())
+            else:
+model_name                words.append(texts[i].strip().lower())
             words_all.append(words)
         return words_all
 
