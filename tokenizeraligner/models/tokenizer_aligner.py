@@ -141,7 +141,7 @@ class TokenizerAligner:
             if num_words > 0:
                 words.append(texts[i][chars_next[0] : ].strip().lower())
             else:
-model_name                words.append(texts[i].strip().lower())
+                words.append(texts[i].strip().lower())
             words_all.append(words)
         return words_all
 
