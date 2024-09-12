@@ -682,6 +682,7 @@ class TokenizerAligner:
             text_tokenized_second[i].word_ids
             for i in range(len(text_tokenized_second["input_ids"]))
         ]
+        #we create this method for a temporal bug in the transformer library in LLAMA 3 tokenizer
         words_first = TokenizerAligner.text_to_words_batch_v2(text, text_tokenized_first)
         words_second = TokenizerAligner.text_to_words_batch(text, text_tokenized_second)
         tokens_idx_mapped, words_str_mapped = [], []
