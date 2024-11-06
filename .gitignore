@@ -163,4 +163,5 @@ cython_debug/
 src/.DS_Store
 .DS_Store
 tokenizeraligner/models/cache/
+tokenizeraligner/tests/cache/
 tokenizeraligner/tests_2/
