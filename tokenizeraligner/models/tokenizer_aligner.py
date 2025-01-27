@@ -71,6 +71,14 @@ class TokenizerAligner:
             start, end = text_tokenized.word_to_chars(i)
             words.append(text[start:end].strip().lower())
         return words
+    
+    @staticmethod
+    def tokens_to_words(text, text_tokenized: BatchEncoding):
+        tokens_str = []
+        for i, chars in enumerate(text_tokenized['offset_mapping'][0]):
+            start, end = chars
+            tokens_str.append(text[start:end].strip().lower())
+        return tokens_str
 
     @staticmethod
     def longest_common_subsequence(seq1: List, seq2: List):
@@ -328,6 +336,7 @@ class TokenizerAligner:
                     )
                     #if there is no way to match words, we match one by one until the end of one list
                     if result_ids_plus is None:
+                        raise Exception('error aligning tokens, will match them automatically')
                         print('error aligning tokens, will match them automatically')
                         print(main_list[i-2:i+2])
                         print(compare_list[j-2:j+2])
