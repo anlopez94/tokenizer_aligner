@@ -336,7 +336,7 @@ class TokenizerAligner:
                     )
                     #if there is no way to match words, we match one by one until the end of one list
                     if result_ids_plus is None:
-                        raise Exception('error aligning tokens, will match them automatically')
+                        # raise Exception('error aligning tokens, will match them automatically')
                         print('error aligning tokens, will match them automatically')
                         print(main_list[i-2:i+2])
                         print(compare_list[j-2:j+2])
