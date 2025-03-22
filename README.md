@@ -1,8 +1,5 @@
 # tokenizer_aligner
-
-# tokenizer_aligner
-
-tokenizer_aligner is a Python library for mapping tokens between different tokenizers
+Python library for mapping tokens between different tokenizers
 
 ## Modules
 
